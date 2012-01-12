@@ -22,26 +22,27 @@ INVALID_XML = """This isn't XML"""
 
 
 class SampleTestCase(XMLAssertions):
-    pass
+    failureException = AssertionError
 
 
 class XMLMixinTests(unittest.TestCase, XMLAssertions):
 
     def setUp(self):
         self.test = SampleTestCase()
-        self.test.assertEquals = Mock()
+        self.test.assertEqual = Mock()
         self.test.fail = Mock()
 
     def test_invalid_xml_raises_assertion(self):
-        with self.assertRaises(AssertionError):
+        print "asdf", self.failureException
+        with self.assertRaises(SampleTestCase.failureException):
             self.test.assertXMLElementText(INVALID_XML, 'ACCEPTED', 'Response.reason')
 
     def test_valid_element_text_comparison(self):
         self.test.assertXMLElementText(SAMPLE_XML, 'ACCEPTED', 'Response.reason')
-        self.test.assertEquals.assert_called_once_with('ACCEPTED', 'ACCEPTED')
+        self.test.assertEqual.assert_called_once_with('ACCEPTED', 'ACCEPTED')
 
     def test_invalid_element_text_comparison(self):
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(SampleTestCase.failureException):
             self.test.assertXMLElementText(SAMPLE_XML, 'ACCEPTED', 'Response.badelement')
 
     def test_invalid_element_fail_message(self):
@@ -53,4 +54,4 @@ class XMLMixinTests(unittest.TestCase, XMLAssertions):
 
     def test_attribute_comparison(self):
         self.test.assertXMLElementAttributes(SAMPLE_XML, {'type': 'sample'}, 'Response.mode') 
-        self.test.assertEquals.assert_called_once_with('sample', 'sample')
+        self.test.assertEqual.assert_called_once_with('sample', 'sample')
