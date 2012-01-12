@@ -1,14 +1,14 @@
-=======================
-Testing XML with Python
-=======================
+=========================
+Testing XML with unittest
+=========================
 
-This library is a set of helper methods for testing XML in Python.
+This library is a set of helper methods for testing XML with Python's unittest library
 
 Sample usage
 ------------
 
 To use these additional assertions, simply mix the ``xmltest.XMLAssertions`` class
-into your test case::
+into your test class::
 
     import unittest
     from xmltest import XMLAssertions
@@ -27,7 +27,7 @@ Assert the attribute values of an element::
 Installation
 ------------
 
-From PyPi::
+From PyPi (coming soon)::
 
     pip install unittest-xml
 
