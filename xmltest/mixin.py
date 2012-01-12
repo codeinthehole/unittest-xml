@@ -1,10 +1,14 @@
 from xml.dom.minidom import parseString
+from xml.parsers.expat import ExpatError
 
 
 class XMLAssertions(object):
 
     def _extract_element(self, xml_str, element_path):
-        doc = parseString(xml_str)
+        try:
+            doc = parseString(xml_str)
+        except ExpatError:
+            raise AssertionError("Invalid XML")
         elements = element_path.split('.')
         parent = doc
         for element_name in elements:

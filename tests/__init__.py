@@ -18,6 +18,8 @@ SAMPLE_XML = """<?xml version="1.0" encoding="UTF-8" ?>
     <time>1071567305</time>
 </Response>"""
 
+INVALID_XML = """This isn't XML"""
+
 
 class SampleTestCase(XMLAssertions):
     pass
@@ -29,6 +31,10 @@ class XMLMixinTests(unittest.TestCase, XMLAssertions):
         self.test = SampleTestCase()
         self.test.assertEquals = Mock()
         self.test.fail = Mock()
+
+    def test_invalid_xml_raises_assertion(self):
+        with self.assertRaises(AssertionError):
+            self.test.assertXMLElementText(INVALID_XML, 'ACCEPTED', 'Response.reason')
 
     def test_valid_element_text_comparison(self):
         self.test.assertXMLElementText(SAMPLE_XML, 'ACCEPTED', 'Response.reason')
