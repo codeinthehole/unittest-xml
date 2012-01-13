@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name='unittest-xml',
-      version='0.2',
+      version='0.2.1',
       url='https://github.com/codeinthehole/unittest-xml',
       author="David Winterbottom",
       author_email="david.winterbottom@tangentlabs.co.uk",
