@@ -2,7 +2,11 @@
 Testing XML with unittest
 =========================
 
-This library is a set of helper methods for testing XML with Python's unittest library
+This library is a set of helper methods for testing XML with Python's unittest library.
+The new assertion methods use `XPath`_ to select the XML elements that assertions are being
+made about.
+
+.. _`XPath`: http://en.wikipedia.org/wiki/XPath
 
 Sample usage
 ------------
@@ -33,22 +37,23 @@ Now suppose you have the following XML string that you wish to examine::
         <time>1071567305</time>
     </Response>"""
 
+Assert the number of elements matching an XPath query::
+
+    self.assertXPathNodeCount(response_xml, 1, 'CardTxn/issuer[@country="UK"]')
+    self.assertXPathNodeCount(response_xml, 1, 'status')
+
 Assert the value of a particular element::
 
-    self.assertXMLElementText(response_xml, 'ACCEPTED', 'Response.reason')
+    self.assertXPathNodeText(response_xml, 'ACCEPTED', 'reason')
 
 Assert the attribute values of an element::
 
-    self.assertXMLElementAttributes(xml, {'country': 'UK'}, 'Response.CardTxn.issuer'}
-
-As you can see, the assertion methods use a simple dot-separated syntax for referencing
-XML elements - not very sophisticated but sufficient for many situations.  Fancy
-XPath-driven assertions to come later.
+    self.assertXPathNodeAttributes(xml, {'country': 'UK'}, 'CardTxn/issuer'}
 
 Installation
 ------------
 
-From PyPi (coming soon)::
+From PyPi::
 
     pip install unittest-xml
 
@@ -62,5 +67,3 @@ To run the tests, install ``nose`` and ``mock``::
 and use::
 
     nosetests
-
-to run the tests.

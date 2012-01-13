@@ -1,37 +1,27 @@
 from xml.dom.minidom import parseString
 from xml.parsers.expat import ExpatError
+from xml.etree import ElementTree
 
 
 class XMLAssertions(object):
 
-    def _extract_element(self, xml_str, element_path):
-        try:
-            doc = parseString(xml_str)
-        except ExpatError:
-            raise self.failureException("Invalid XML")
-        elements = element_path.split('.')
-        parent = doc
-        for element_name in elements:
-            sub_elements = parent.getElementsByTagName(element_name)
-            if len(sub_elements) == 0:
-                msg = "No element matching '%s' found using XML string '%s'" % (element_name, element_path)
-                raise self.failureException(msg)
-            parent = sub_elements[0]
-        return parent
+    def assertXPathNodeCount(self, xml_str, num, xpath):
+        doc = ElementTree.fromstring(xml_str)
+        self.assertEqual(num, len(doc.findall(xpath)))
 
-    def assertXMLElementText(self, xml_str, value, element_path):
-        """
-        Assert that an XML string contains an element
-        with value matching that passed.
-        """
-        element = self._extract_element(xml_str, element_path)
-        self.assertEqual(value, element.firstChild.data)
+    def assertXPathNodeText(self, xml_str, expected, xpath):
+        doc = ElementTree.fromstring(xml_str)
+        self.assertEqual(expected, doc.findtext(xpath))
 
-    def assertXMLElementAttributes(self, xml_str, attributes, element_path):
-        """
-        Assert that an XML element contains a given set of attributes
-        """
-        element = self._extract_element(xml_str, element_path)
+    def assertXPathNodeAttributes(self, xml_str, attributes, xpath):
+        doc = ElementTree.fromstring(xml_str)
+        ele = doc.find(xpath)
         for attribute, value in attributes.items():
-            self.assertEqual(value, element.attributes[attribute].value)
+            self.assertTrue(attribute in ele.attrib)
+            self.assertEqual(value, ele.attrib[attribute])
+
+
+
+
+
          

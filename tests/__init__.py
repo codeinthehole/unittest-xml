@@ -18,40 +18,33 @@ SAMPLE_XML = """<?xml version="1.0" encoding="UTF-8" ?>
     <time>1071567305</time>
 </Response>"""
 
-INVALID_XML = """This isn't XML"""
 
-
-class SampleTestCase(XMLAssertions):
-    failureException = AssertionError
-
-
-class XMLMixinTests(unittest.TestCase, XMLAssertions):
+class XMLMixinTests(unittest.TestCase):
 
     def setUp(self):
-        self.test = SampleTestCase()
+        self.test = type('SampleTestCase', 
+                (unittest.TestCase, XMLAssertions), 
+                {'runTest': lambda x: x})()
         self.test.assertEqual = Mock()
-        self.test.fail = Mock()
+        self.test.assertTrue = Mock()
 
-    def test_invalid_xml_raises_assertion(self):
-        print "asdf", self.failureException
-        with self.assertRaises(SampleTestCase.failureException):
-            self.test.assertXMLElementText(INVALID_XML, 'ACCEPTED', 'Response.reason')
+    def test_asserting_number_of_elements(self):
+        self.test.assertXPathNodeCount(SAMPLE_XML, 1, './/reason')
+        self.test.assertEqual.assert_called_once_with(1, 1)
 
-    def test_valid_element_text_comparison(self):
-        self.test.assertXMLElementText(SAMPLE_XML, 'ACCEPTED', 'Response.reason')
+    def test_asserting_node_text(self):
+        self.test.assertXPathNodeText(SAMPLE_XML, 'ACCEPTED', 'reason')
         self.test.assertEqual.assert_called_once_with('ACCEPTED', 'ACCEPTED')
 
-    def test_invalid_element_text_comparison(self):
-        with self.assertRaises(SampleTestCase.failureException):
-            self.test.assertXMLElementText(SAMPLE_XML, 'ACCEPTED', 'Response.badelement')
+    def test_asserting_node_text_using_attribute_query(self):
+        self.test.assertXPathNodeText(SAMPLE_XML, 'LIVE', 'mode[@type="sample"]')
+        self.test.assertEqual.assert_called_once_with('LIVE', 'LIVE')
 
-    def test_invalid_element_fail_message(self):
-        try:
-            self.test.assertXMLElementText(SAMPLE_XML, 'ACCEPTED', 'Response.badelement')
-        except AssertionError, e:
-            msg = str(e)
-            self.assertTrue('No element matching' in msg)
+    def test_asserting_node_text_for_invalid_query(self):
+        self.test.assertXPathNodeText(SAMPLE_XML, 'ACCEPTED', 'badelement')
+        self.test.assertEqual.assert_called_once_with('ACCEPTED', None)
 
-    def test_attribute_comparison(self):
-        self.test.assertXMLElementAttributes(SAMPLE_XML, {'type': 'sample'}, 'Response.mode') 
+    def test_asserting_attribute_values(self):
+        self.test.assertXPathNodeAttributes(SAMPLE_XML, {'type': 'sample'}, 'mode') 
         self.test.assertEqual.assert_called_once_with('sample', 'sample')
+        self.test.assertTrue.assert_called_once_with(True)
