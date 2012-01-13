@@ -11,5 +11,4 @@ setup(name='unittest-xml',
       keywords="XML, testing",
       platforms=['linux'],
       packages=find_packages(exclude=['tests']),
-      install_requires=['unittest',],
       )
